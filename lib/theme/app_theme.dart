@@ -24,11 +24,9 @@ class AppTheme {
       brightness: Brightness.dark,
       scaffoldBackgroundColor: background,
       colorScheme: const ColorScheme.dark(
-        background: background,
         surface: surface,
         primary: accentPurple,
         secondary: accentCyan,
-        onBackground: textPrimary,
         onSurface: textPrimary,
       ),
       textTheme: const TextTheme(
