@@ -69,12 +69,12 @@ class _CategoryCardState extends State<CategoryCard>
             color: AppTheme.cardColor,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: widget.color.withOpacity(0.25),
+              color: widget.color.withValues(alpha: 0.5),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: widget.color.withOpacity(0.08),
+                color: widget.color.withValues(alpha: (0.08)),
                 blurRadius: 20,
                 spreadRadius: 2,
                 offset: const Offset(0, 4),
@@ -88,7 +88,7 @@ class _CategoryCardState extends State<CategoryCard>
                 width: 64,
                 height: 64,
                 decoration: BoxDecoration(
-                  color: widget.color.withOpacity(0.12),
+                  color: widget.color.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(18),
                 ),
                 child: Center(
@@ -111,7 +111,7 @@ class _CategoryCardState extends State<CategoryCard>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: widget.color.withOpacity(0.15),
+                        color: widget.color.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
@@ -152,7 +152,7 @@ class _CategoryCardState extends State<CategoryCard>
               // Arrow
               Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: widget.color.withOpacity(0.6),
+                color: widget.color.withValues(alpha: 0.6),
                 size: 18,
               ),
             ],

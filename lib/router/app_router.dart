@@ -2,18 +2,21 @@ import 'package:flutter/material.dart';
 import '../screens/home_screen.dart';
 import '../screens/quiz_screen.dart';
 import '../screens/puzzle_screen.dart';
-
+import '../screens/splash_screen.dart';
 class AppRouter {
   static const String home = '/';
   static const String quiz = '/quiz';
   static const String puzzle = '/puzzle';
+  static const String levelSelect = '/level-select';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case home:
         return _fadeRoute(const HomeScreen(), settings);
+      case levelSelect:
+        return _fadeRoute(const QuizSplashScreen(), settings);
       case quiz:
-        return _fadeRoute(const QuizScreen(), settings);
+        return _fadeRoute(const QuizGameScreen(), settings);
       case puzzle:
         return _fadeRoute(const PuzzleScreen(), settings);
       default:
