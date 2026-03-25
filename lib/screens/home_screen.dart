@@ -146,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen>
                     tag: 'FUNNY',
                     onTap: () {
                       provider.selectCategory(GameCategory.puzzle);
-                      Navigator.pushNamed(context, AppRouter.puzzle);
+                      Navigator.pushNamed(context, AppRouter.selectImage);
                     },
                   ),
 
