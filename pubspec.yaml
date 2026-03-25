@@ -12,6 +12,13 @@ dependencies:
     sdk: flutter
 
   flutter_dotenv: ^6.0.0
+  http: ^1.1.0
+  shared_preferences: ^2.2.2
+  audioplayers: ^5.2.1
+  confetti: ^0.7.0
+
+
+  
 
   # State management
   provider: ^6.1.2
@@ -39,6 +46,10 @@ flutter:
 
   assets:
     - .env
+    - assets/images/
+    - assets/sounds/mansit.mp3
+    - assets/sounds/lahn-mansit.mp3
+    
 
   # Pour ajouter la police Poppins localement si pas de google_fonts :
   # fonts:

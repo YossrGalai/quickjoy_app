@@ -1,22 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'app.dart';
+
 import 'providers/game_provider.dart';
 import 'controllers/quiz_controller.dart';
+import 'router/app_router.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Force portrait mode
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
-
-  // Fullscreen immersive
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-
+  // Charger le fichier .env
   await dotenv.load(fileName: ".env");
   print("ENV LOADED: ${dotenv.env}");
 
@@ -26,7 +19,24 @@ void main() async {
         ChangeNotifierProvider(create: (_) => GameProvider()),
         ChangeNotifierProvider(create: (_) => QuizController()),
       ],
-      child: const SnapMindApp(),
+      child: const QuickJoyApp(),
     ),
   );
+}
+
+class QuickJoyApp extends StatelessWidget {
+  const QuickJoyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'QuickJoy',
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple,
+      ),
+      initialRoute: AppRouter.home,
+      onGenerateRoute: AppRouter.generateRoute,
+    );
+  }
 }
