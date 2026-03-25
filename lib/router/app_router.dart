@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import '../screens/home_screen.dart';
 import '../screens/quiz_screen.dart';
-//import '../screens/mozaic_puzzle_screen.dart';
+
+import '../screens/splash_screen.dart';
 import '../screens/select_image_screen.dart';
 
 class AppRouter {
   static const String home = '/';
   static const String quiz = '/quiz';
   static const String puzzle = '/puzzle';
+  static const String levelSelect = '/level-select';
   static const String selectImage = '/select_image';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case home:
         return _fadeRoute(const HomeScreen(), settings);
+      case levelSelect:
+        return _fadeRoute(const QuizSplashScreen(), settings);
       case quiz:
-        return _fadeRoute(const QuizScreen(), settings);
-      /*case puzzle:
-        return _fadeRoute(const MosaicPuzzleScreen(imagePath: 'assets/images/nabeul-centre.jpg'), settings);
-      */
+        return _fadeRoute(const QuizGameScreen(), settings);
       case selectImage:
         return _fadeRoute(const SelectImageScreen(), settings);
       default:
