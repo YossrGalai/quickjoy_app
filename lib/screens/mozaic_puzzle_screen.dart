@@ -224,7 +224,11 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
                     Container(
                       height: 150,
                       padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(16)),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.1),
+                        borderRadius:
+                            BorderRadius.circular(16),
+                      ),
                       child: GridView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: pieces.length,

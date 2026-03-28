@@ -102,9 +102,9 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.black.withAlpha(64),
+                        color: Colors.black.withValues(alpha: 0.25),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white.withAlpha(51)),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
                       ),
                       child: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 22),
                     ),
@@ -134,16 +134,16 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text('🏺', style: TextStyle(fontSize: 24)),
-                        SizedBox(width: 8),
-                        Text('🕌', style: TextStyle(fontSize: 24)),
-                        SizedBox(width: 8),
-                        Text('🏛️', style: TextStyle(fontSize: 24)),
-                        SizedBox(width: 8),
-                        Text('🇹🇳', style: TextStyle(fontSize: 24)),
+                      children: [
+                        const Text('🏺', style: TextStyle(fontSize: 24)),
+                        const SizedBox(width: 8),
+                        const Text('🕌', style: TextStyle(fontSize: 24)),
+                        const SizedBox(width: 8),
+                        const Text('🏛️', style: TextStyle(fontSize: 24)),
+                        const SizedBox(width: 8),
+                        const Text('🇹🇳', style: TextStyle(fontSize: 24)),
                       ],
                     ),
                   ],
@@ -188,6 +188,18 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                               borderRadius: BorderRadius.circular(16),
                               child: Image.asset(image['path']!, fit: BoxFit.cover, width: double.infinity, height: double.infinity),
                             ),
+                            // Overlay dégradé
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                gradient: LinearGradient(
+                                  colors: [Colors.black.withValues(alpha: 0.6), Colors.transparent],
+                                  begin: Alignment.bottomCenter,
+                                  end: Alignment.topCenter,
+                                ),
+                              ),
+                            ),
+                            // Titre
                             Positioned(
                               bottom: 10,
                               left: 10,

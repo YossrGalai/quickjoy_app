@@ -26,6 +26,7 @@ class QuizController extends ChangeNotifier {
   QuizState get state => _state;
 
   List<QuizQuestion> _questions = [];
+  List<String> _askedQuestions = [];
   int _qIndex = 0;
   QuizQuestion? get currentQuestion => _questions.isNotEmpty ? _questions[_qIndex] : null;
   int get qIndex => _qIndex;
@@ -100,13 +101,14 @@ class QuizController extends ChangeNotifier {
       _questions = await _quizService.generateQuestions(
         10,
         currentLevel.difficulty,
+        excludeQuestions: _askedQuestions,
       );
+      _askedQuestions.addAll(_questions.map((q) => q.question));
     } catch (e) {
         //_questions = List<QuizQuestion>.from(kQuizQuestions)..shuffle(Random());
         //_questions = _questions.take(10).toList();
         _errorMessage = 'Impossible de générer les questions via l\'IA : $e';
-        debugPrint(_errorMessage); // pour la console
-        
+        debugPrint(_errorMessage); // pour la console   
     }
 
     _score = 0;
@@ -246,6 +248,7 @@ class QuizController extends ChangeNotifier {
     _result = null;
     _aiText = '';
     _aiVisible = false;
+    _askedQuestions = [];
     notifyListeners();
   }
 
@@ -272,24 +275,32 @@ class QuizController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void useLifelineHint() {
+  void useLifelineHint() async {
     if (!_llHint || _state != QuizState.playing) return;
     _llHint = false;
-    
-    final explanation = currentQuestion?.explanation ?? '';
-  
-    String hint;
-    if (explanation.isEmpty) {
-      hint = 'Réfléchis bien aux options disponibles !';
-    } else {
-      // Prendre la première phrase non vide
-      final sentences = explanation.split('.').where((s) => s.trim().isNotEmpty).toList();
-      hint = sentences.isNotEmpty ? '${sentences.first.trim()}.' : explanation;
+
+    _aiText = '💡 Indice en cours...';
+    _aiVisible = true;
+    _aiLoading = true;
+    notifyListeners();
+
+    try {
+      final hint = await _quizService.generateHint(
+        question: currentQuestion!.question,
+        options: currentQuestion!.options,
+      );
+      _aiText = '💡 $hint';
+    } catch (_) {
+      // Fallback : première phrase de l'explication tronquée
+      final sentences = currentQuestion!.explanation
+          .split('.')
+          .where((s) => s.trim().isNotEmpty)
+          .toList();
+      final short = sentences.isNotEmpty ? sentences.first.trim() : currentQuestion!.explanation;
+      _aiText = '💡 ${short.length > 60 ? '${short.substring(0, 60)}…' : short}';
     }
 
-    _aiText = '💡 Indice : $hint';
-    print("AI TEXT = $_aiText");
-    _aiVisible = true;
+    _aiLoading = false;
     notifyListeners();
   }
 
@@ -317,6 +328,7 @@ class QuizController extends ChangeNotifier {
   void _generateFinalAI() async {
     _aiLoading = true;
     _aiText = '';
+    _aiVisible = true;
     notifyListeners();
     try {
       final response = await _quizService.generateSummary(
@@ -324,7 +336,8 @@ class QuizController extends ChangeNotifier {
         levelName: currentLevel.name,
       );
       _aiText = response;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('generateFinalAI error: $e');
       final pct = (_result!.accuracy * 100).round();
       _aiText = pct >= 80
           ? 'Félicitations! Avec $pct% de réussite en mode ${currentLevel.name}, vous maîtrisez remarquablement la culture tunisienne.'
