@@ -46,10 +46,10 @@ class ScoreHeader extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            color: AppTheme.accentPurple.withOpacity(0.15),
+            color: AppTheme.accentPurple.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: AppTheme.accentPurple.withOpacity(0.3),
+              color: AppTheme.accentPurple.withValues(alpha: 0.3),
               width: 1,
             ),
           ),
