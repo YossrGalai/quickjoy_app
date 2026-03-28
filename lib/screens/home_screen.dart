@@ -131,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen>
                     tag: 'EDUCATIVE',
                     onTap: () {
                       provider.selectCategory(GameCategory.quiz);
-                      Navigator.pushNamed(context, AppRouter.quiz);
+                      Navigator.pushNamed(context, AppRouter.levelSelect);
                     },
                   ),
 
