@@ -31,7 +31,7 @@ class ScoreHeader extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             const Text(
-              'SnapMind',
+              'QuickJoy',
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 18,

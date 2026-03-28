@@ -11,7 +11,6 @@ Future<void> main() async {
 
   // Charger le fichier .env
   await dotenv.load(fileName: ".env");
-  print("ENV LOADED: ${dotenv.env}");
 
   runApp(
     MultiProvider(

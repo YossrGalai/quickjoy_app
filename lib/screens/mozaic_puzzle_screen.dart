@@ -300,7 +300,7 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
                       margin: const EdgeInsets.only(top: 10),
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         borderRadius:
                             BorderRadius.circular(16),
                       ),

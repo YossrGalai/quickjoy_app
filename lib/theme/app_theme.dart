@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Palette principale — dark avec accents vifs
-  static const Color background = Color(0xFF0D0D1A);
-  static const Color surface = Color(0xFF1A1A2E);
-  static const Color cardColor = Color(0xFF16213E);
+  static const Color background = Color(0xFF1A1A3E);
+  static const Color surface    = Color(0xFF252550);
+  static const Color cardColor  = Color(0xFF2A2A5A);
 
-  static const Color accentPurple = Color(0xFF7C5CBF);
-  static const Color accentCyan = Color(0xFF00D4FF);
+  static const Color accentPurple = Color(0xFF9B7FE8);
+  static const Color accentCyan   = Color(0xFF00E5FF);
   static const Color accentYellow = Color(0xFFFFD93D);
-  static const Color accentGreen = Color(0xFF6BCB77);
+  static const Color accentGreen  = Color(0xFF4DD97A);
 
-  static const Color textPrimary = Color(0xFFF0F0F0);
-  static const Color textSecondary = Color(0xFF9E9EB8);
+  static const Color textPrimary   = Color(0xFFFFFFFF);
+  static const Color textSecondary = Color(0xFFB8B8D4);
 
-  // Couleurs par catégorie
-  static const Color quizColor = Color(0xFF00D4FF);    // Cyan — éducatif
-  static const Color puzzleColor = Color(0xFFFFD93D);  // Jaune — fun
+  // Couleurs par catégorie — inchangées
+  static const Color quizColor   = Color(0xFF00E5FF);
+  static const Color puzzleColor = Color(0xFFFFD93D);
 
   static ThemeData get darkTheme {
     return ThemeData(

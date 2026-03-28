@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
 import '../providers/game_provider.dart';
 import '../router/app_router.dart';
+import '../widgets/bottom_nav_widget.dart';
 import '../widgets/category_card.dart';
 import '../widgets/score_header.dart';
 
@@ -50,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     return Scaffold(
       backgroundColor: AppTheme.background,
+      bottomNavigationBar: const BottomNavWidget(),
       body: SafeArea(
         child: FadeTransition(
           opacity: _fadeAnim,
@@ -72,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen>
                     text: const TextSpan(
                       children: [
                         TextSpan(
-                          text: 'Turn waiting\ninto ',
+                          text: 'Transforme l\'attente\nen ',
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 34,
@@ -82,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                         ),
                         TextSpan(
-                          text: 'something.',
+                          text: 'quelque chose.',
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 34,
@@ -98,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen>
                   const SizedBox(height: 8),
 
                   const Text(
-                    'Pick a category and snap into it.',
+                    'Choisis une catégorie et plonge dedans.',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 15,
@@ -110,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen>
 
                   // Label section
                   const Text(
-                    'CHOOSE YOUR VIBE',
+                    'CHOISIS TON STYLE',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 11,
@@ -125,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen>
                   // Carte Quiz
                   CategoryCard(
                     title: 'Quiz Time',
-                    subtitle: 'Test your knowledge\nin 60 seconds',
+                    subtitle: 'Teste tes connaissances\nsur la Tunisie',
                     emoji: '🧠',
                     color: AppTheme.quizColor,
                     tag: 'EDUCATIVE',
@@ -140,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen>
                   // Carte Puzzle
                   CategoryCard(
                     title: 'Puzzle Drop',
-                    subtitle: 'Slide pieces,\nbig satisfaction',
+                    subtitle: 'Glisse les pièces,\nénorme satisfaction',
                     emoji: '🧩',
                     color: AppTheme.puzzleColor,
                     tag: 'FUNNY',
@@ -155,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen>
                   // Sessions du jour
                   Center(
                     child: Text(
-                      '${provider.sessionsToday} sessions today',
+                      '${provider.sessionsToday} sessions aujourd\'hui',
                       style: const TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 13,
