@@ -17,6 +17,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => GameProvider()),
+        ChangeNotifierProvider.value(value: AlbumData()),
         ChangeNotifierProvider(create: (_) => QuizController()),
       ],
       child: const QuickJoyApp(),
