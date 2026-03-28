@@ -1,7 +1,9 @@
-
-
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'mozaic_puzzle_screen.dart';
+import 'album_screen.dart';
+import '../services/ai_service.dart';
+import '../data/album_data.dart';
 
 class SelectImageScreen extends StatefulWidget {
   const SelectImageScreen({super.key});
@@ -25,7 +27,6 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
     {'path': 'assets/images/fokhar.webp', 'title': 'Fokhar 🏺', 'subtitle': 'Poterie traditionnelle'},
     {'path': 'assets/images/guellala.jpg', 'title': 'Guellala 🏜️', 'subtitle': 'Oasis du sud'},
     {'path': 'assets/images/hammamet1.webp', 'title': 'Hammamet 🏖️', 'subtitle': 'Destination balnéaire'},
-    {'path': 'assets/images/hammamet2.jpeg', 'title': 'Hammamet Médina 🌅', 'subtitle': 'Vieille ville côtière'},
     {'path': 'assets/images/henna.webp', 'title': 'Henna 💅', 'subtitle': 'Art corporel traditionnel'},
     {'path': 'assets/images/kaak-warka.jpg', 'title': 'Kaak Warka 🥐', 'subtitle': 'Pâtisserie tunisienne'},
     {'path': 'assets/images/kafteji.png', 'title': 'Kafteji 🍴', 'subtitle': 'Spécialité locale'},
@@ -54,12 +55,27 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
     {'path': 'assets/images/tunis2.jpg', 'title': 'Tunis Médina 🕌', 'subtitle': 'Cœur de Tunis'},
     {'path': 'assets/images/yassmine.jpeg', 'title': 'Yasmine Hammamet 🌹', 'subtitle': 'Station balnéaire'},
     {'path': 'assets/images/zarzis.jpg', 'title': 'Zarzis 🏖️', 'subtitle': 'Plage du sud'},
+    {'path': 'assets/images/felfel.webp', 'title': 'Felfel 🌶️', 'subtitle': 'Piment tunisien épicé'},
+    {'path': 'assets/images/Machmoum.jpg', 'title': 'Machmoum 🌸', 'subtitle': 'Bouquet de jasmin traditionnel'},
+    {'path': 'assets/images/El-Khomsa.jpeg', 'title': 'Khomsa 🪬', 'subtitle': 'Symbole protecteur tunisien'},
   ];
 
-  Set<String> favoris = {}; // 🌟 Favoris
+  // Set<String> favoris = {}; // 🌟 Favoris - removed, using AlbumData directly
+  
+  final String n8nWebhookUrl = "https://alec-nonaquatic-miesha.ngrok-free.dev/webhook/puzzle-ai"; 
 
-  /// 🔗 EXEMPLE WEBHOOK POUR N8N
-  final String n8nWebhookUrl = "http://localhost:5678/webhook-test/puzzle-ai"; 
+  void showModernSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        backgroundColor: Colors.blueAccent,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,11 +84,7 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF1E1E2E),
-              Color(0xFF3A0CA3),
-              Color(0xFF4361EE),
-            ],
+            colors: [Color(0xFF1E1E2E), Color(0xFF3A0CA3), Color(0xFF4361EE)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -90,9 +102,9 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.25),
+                        color: Colors.black.withAlpha(64),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white.withOpacity(0.2)),
+                        border: Border.all(color: Colors.white.withAlpha(51)),
                       ),
                       child: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 22),
                     ),
@@ -107,51 +119,35 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          '🇹🇳',
-                          style: TextStyle(fontSize: 40),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Tunisie',
-                          style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          '🇹🇳',
-                          style: TextStyle(fontSize: 40),
-                        ),
+                      children: const [
+                        Text('🇹🇳', style: TextStyle(fontSize: 40)),
+                        SizedBox(width: 12),
+                        Text('Tunisie', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
+                        SizedBox(width: 12),
+                        Text('🇹🇳', style: TextStyle(fontSize: 40)),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    const Text(
                       'Choisissez une image pour votre puzzle',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.white70,
-                      ),
+                      style: TextStyle(color: Colors.white70),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('🏺', style: TextStyle(fontSize: 24)),
-                        const SizedBox(width: 8),
-                        const Text('🕌', style: TextStyle(fontSize: 24)),
-                        const SizedBox(width: 8),
-                        const Text('🏛️', style: TextStyle(fontSize: 24)),
-                        const SizedBox(width: 8),
-                        const Text('🇹🇳', style: TextStyle(fontSize: 24)),
+                      children: const [
+                        Text('🏺', style: TextStyle(fontSize: 24)),
+                        SizedBox(width: 8),
+                        Text('🕌', style: TextStyle(fontSize: 24)),
+                        SizedBox(width: 8),
+                        Text('🏛️', style: TextStyle(fontSize: 24)),
+                        SizedBox(width: 8),
+                        Text('🇹🇳', style: TextStyle(fontSize: 24)),
                       ],
                     ),
                   ],
-                  
                 ),
-                
               ),
 
               // 📸 Grid d'images
@@ -161,26 +157,30 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                   child: GridView.builder(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      mainAxisSpacing: 20,
                       crossAxisSpacing: 20,
+                      mainAxisSpacing: 20,
                       childAspectRatio: 1,
                     ),
                     itemCount: images.length,
                     itemBuilder: (context, index) {
                       final image = images[index];
-                      final isFavorite = favoris.contains(image['path']);
                       return GestureDetector(
                         onTap: () {
-                          // 🖼 Passage à MosaicPuzzleScreen
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) => MosaicPuzzleScreen(
                                 imagePath: image['path']!,
-                                //n8nWebhookUrl: n8nWebhookUrl, // 🌐 Envoi n8n
+                                imageName: image['title'],
                               ),
                             ),
-                          );
+                          ).then((result) {
+                            if (result == true) {
+                              SchedulerBinding.instance.addPostFrameCallback((_) {
+                                setState(() {});
+                              });
+                            }
+                          });
                         },
                         child: Stack(
                           children: [
@@ -188,18 +188,6 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                               borderRadius: BorderRadius.circular(16),
                               child: Image.asset(image['path']!, fit: BoxFit.cover, width: double.infinity, height: double.infinity),
                             ),
-                            // Overlay dégradé
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                gradient: LinearGradient(
-                                  colors: [Colors.black.withOpacity(0.6), Colors.transparent],
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
-                                ),
-                              ),
-                            ),
-                            // Titre
                             Positioned(
                               bottom: 10,
                               left: 10,
@@ -207,65 +195,109 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    image['title']!,
-                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    image['subtitle']!,
-                                    style: const TextStyle(color: Colors.white70, fontSize: 12),
-                                  ),
+                                  Text(image['title']!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                  Text(image['subtitle']!, style: const TextStyle(color: Colors.white70, fontSize: 12)),
                                 ],
                               ),
                             ),
-                            // Bouton favori
+                            /// ⭐ FAVORI
                             Positioned(
-                              top: 10,
-                              right: 10,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    if (isFavorite) {
-                                      favoris.remove(image['path']);
-                                    } else {
-                                      favoris.add(image['path']!);
-                                    }
-                                  });
-                                },
-                                child: Icon(
-                                  isFavorite ? Icons.star : Icons.star_border,
-                                  color: Colors.yellowAccent,
-                                  size: 28,
+                                  top: 10,
+                                  right: 10,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      // Add logic without setState first
+                                      final path = image['path']!;
+                                      if (AlbumData.exists(path)) {
+                                        AlbumData.removeByPath(path);
+                                        showModernSnackbar("Supprimé de l'album ⭐");
+                                      } else {
+                                        showModernSnackbar("Ajouté à l'album ⭐");
+                                        
+                                        AlbumData.addItem(
+                                          imagePath: path,
+                                          title: image['title']!,
+                                          description: "Génération de la description...",
+                                        );
+                                        
+                                        // Lancer la génération AI en arrière-plan
+                                        Future(() async {
+                                          try {
+                                            final desc = await AiService.generateDescription(
+                                              title: image['title']!,
+                                            );
+                                            AlbumData.updateDescriptionByPath(path, desc);
+                                          } catch (_) {
+                                            AlbumData.updateDescriptionByPath(path, "Description indisponible");
+                                          }
+                                        });
+                                      }
+                                      // Update UI after
+                                      SchedulerBinding.instance.addPostFrameCallback((_) {
+                                        setState(() {});
+                                      });
+                                    },
+                                    child: Icon(
+                                      // Calcul direct pour une réactivité immédiate
+                                      AlbumData.exists(image['path']!) ? Icons.star : Icons.star_border,
+                                      color: Colors.yellow,
+                                      size: 28,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
                           ],
                         ),
                       );
                     },
                   ),
-                  
                 ),
-                
-                
               ),
+
               // Bottom decoration
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Column(
                   children: [
-                    const Text('🌟', style: TextStyle(fontSize: 24)),
-                    const SizedBox(width: 16),
-                    Text(
-                      'Puzzle Art Tunisien',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.white70,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text('🌟', style: TextStyle(fontSize: 24)),
+                        SizedBox(width: 16),
+                        Text('Puzzle Art Tunisien', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w500)),
+                        SizedBox(width: 16),
+                        Text('🌟', style: TextStyle(fontSize: 24)),
+                      ],
                     ),
-                    const SizedBox(width: 16),
-                    const Text('🌟', style: TextStyle(fontSize: 24)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        GestureDetector(
+                          onTap: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const AlbumScreen()),
+                            );
+                            SchedulerBinding.instance.addPostFrameCallback((_) {
+                              setState(() {});
+                            });
+                          },
+                          child: const Text("Album", style: TextStyle(color: Colors.white, fontSize: 18)),
+                        ),
+                        const SizedBox(width: 5),
+                        IconButton(
+                          icon: const Icon(Icons.photo_album, color: Colors.white),
+                          onPressed: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const AlbumScreen()),
+                            );
+                            SchedulerBinding.instance.addPostFrameCallback((_) {
+                              setState(() {});
+                            });
+                          },
+                        ),
+                      ],
+                    )
                   ],
                 ),
               ),
@@ -276,3 +308,14 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+

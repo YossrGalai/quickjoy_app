@@ -58,6 +58,12 @@ class GameProvider extends ChangeNotifier {
     _isPlaying = false;
     notifyListeners();
   }
+
+
+  void addScore(int value) {
+  _totalScore += value;
+  notifyListeners(); // 🔥 très important
+}
 }
 
 

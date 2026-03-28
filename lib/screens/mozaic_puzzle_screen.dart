@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
@@ -8,10 +6,16 @@ import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:confetti/confetti.dart';
 import 'dart:io';
+import '../services/ai_service.dart';
+import '../data/album_data.dart';
+import '../providers/game_provider.dart';
+import 'package:provider/provider.dart';
 
 class MosaicPuzzleScreen extends StatefulWidget {
   final String imagePath;
-  const MosaicPuzzleScreen({super.key, required this.imagePath});
+  final String? imageName;
+
+  const MosaicPuzzleScreen({super.key, required this.imagePath, this.imageName});
 
   @override
   State<MosaicPuzzleScreen> createState() => _MosaicPuzzleScreenState();
@@ -19,10 +23,8 @@ class MosaicPuzzleScreen extends StatefulWidget {
 
 class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
   int gridSize = 3;
-
   List<int?> board = [];
   List<int> pieces = [];
-
   ui.Image? image;
 
   int clicks = 0;
@@ -38,20 +40,16 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
   @override
   void initState() {
     super.initState();
-
     confetti = ConfettiController(duration: const Duration(seconds: 3));
-
     startMusic();
     loadImage();
   }
 
-  /// 🎶 MUSIC AUTO
   Future<void> startMusic() async {
     await player.setReleaseMode(ReleaseMode.loop);
     await player.play(AssetSource('sounds/lahn-mansit.mp3'));
   }
 
-  /// 🖼 LOAD IMAGE
   Future<void> loadImage() async {
     final data = await rootBundle.load(widget.imagePath);
     final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
@@ -68,9 +66,7 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
 
   void startGame() {
     timer?.cancel();
-
     int total = gridSize * gridSize;
-
     board = List.filled(total, null);
     pieces = List.generate(total, (i) => i)..shuffle();
 
@@ -80,23 +76,18 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
     isPaused = false;
 
     timer = Timer.periodic(const Duration(seconds: 1), (_) {
-  if (!mounted) return;
-
-  if (!isPaused) {
-    setState(() {
-      seconds++;
-      updateScore();
+      if (!mounted) return;
+      if (!isPaused) {
+        setState(() {
+          seconds++;
+          updateScore();
+        });
+        if (points <= 0) {
+          timer?.cancel();
+          showFailDialog();
+        }
+      }
     });
-
-    // 💀 CONDITION ÉCHEC
-    if (points <= 0) {
-      timer?.cancel();
-      showFailDialog();
-    }
-  }
-});
-
-    setState(() {});
   }
 
   void updateScore() {
@@ -144,11 +135,7 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF1E1E2E),
-              Color(0xFF3A0CA3),
-              Color(0xFF4361EE),
-            ],
+            colors: [Color(0xFF1E1E2E), Color(0xFF3A0CA3), Color(0xFF4361EE)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -161,46 +148,26 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
                 Column(
                   children: [
                     const SizedBox(height: 12),
-
-                    /// HEADER
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Text("⏱ $seconds",
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 16)),
-                        Text("🖱 $clicks",
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 16)),
-                        Text("⭐ $points",
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 16)),
+                        Text("⏱ $seconds", style: const TextStyle(color: Colors.white, fontSize: 16)),
+                        Text("🖱 $clicks", style: const TextStyle(color: Colors.white, fontSize: 16)),
+                        Text("⭐ $points", style: const TextStyle(color: Colors.white, fontSize: 16)),
                       ],
                     ),
                     const SizedBox(height: 10),
-
-                    /// BUTTONS
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         ElevatedButton(
-                          onPressed: () {
-                            setState(() => isPaused = !isPaused);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.purpleAccent,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 12),
-                          ),
+                          onPressed: () => setState(() => isPaused = !isPaused),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.purpleAccent),
                           child: Text(isPaused ? "Reprendre" : "Pause"),
                         ),
                         ElevatedButton(
                           onPressed: startGame,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.greenAccent,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 12),
-                          ),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.greenAccent),
                           child: const Text("Rejouer"),
                         ),
                         ElevatedButton(
@@ -208,38 +175,24 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
                             player.stop();
                             Navigator.pop(context);
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.redAccent,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 12),
-                          ),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
                           child: const Text("Quitter"),
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 10),
-
-                    /// GRID
                     Expanded(
                       child: Center(
                         child: Container(
                           padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
+                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
                           child: GridView.builder(
                             itemCount: board.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: gridSize,
-                            ),
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: gridSize),
                             itemBuilder: (context, index) {
                               return DragTarget<int>(
-                                onAccept: (data) {
+                                onAccept: (data) async {
                                   if (isPaused) return;
-
                                   setState(() {
                                     if (data == index) {
                                       board[index] = data;
@@ -252,40 +205,14 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
                                   if (isSolved()) {
                                     timer?.cancel();
                                     confetti.play();
-
-                                    showDialog(
-                                      context: context,
-                                      builder: (_) => AlertDialog(
-                                        title: const Text("🎉 Bravo !"),
-                                        content: Text(
-                                            "Puzzle terminé !\nTemps: $seconds s\nClics: $clicks\nPoints: $points"),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text("Accueil"),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              player.stop();
-                                              exit(0);
-                                            },
-                                            child: const Text("Quitter"),
-                                          ),
-                                        ],
-                                      ),
-                                      
-                                    );
+                                    Provider.of<GameProvider>(context, listen: false).addScore(points);
+                                    _showSuccessDialog();
                                   }
                                 },
                                 builder: (_, __, ___) => Container(
                                   margin: const EdgeInsets.all(2),
                                   color: Colors.grey[300],
-                                  child: board[index] != null
-                                      ? buildPiece(board[index]!)
-                                      : null,
+                                  child: board[index] != null ? buildPiece(board[index]!) : null,
                                 ),
                               );
                             },
@@ -293,94 +220,48 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
                         ),
                       ),
                     ),
-
-                    /// PIECES BAR
+                    const SizedBox(height: 10),
                     Container(
                       height: 150,
-                      margin: const EdgeInsets.only(top: 10),
                       padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        borderRadius:
-                            BorderRadius.circular(16),
-                      ),
+                      decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(16)),
                       child: GridView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: pieces.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                        ),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                         itemBuilder: (context, index) {
                           int value = pieces[index];
-
                           return Draggable<int>(
+                            key: ValueKey(value),
                             data: value,
-                            feedback: SizedBox(
-                              width: 80,
-                              height: 80,
+                            feedback: Material(
+                              color: Colors.transparent,
                               child: buildPiece(value),
                             ),
-                            childWhenDragging: Opacity(
-                              opacity: 0.3,
-                              child: buildPiece(value),
-                            ),
-                            child: Container(
-                              margin:
-                                  const EdgeInsets.all(4),
-                              child: SizedBox(
-                                width: 60,
-                                height: 60,
-                                child: buildPiece(value),
-                              ),
-                            ),
+                            childWhenDragging: const SizedBox(width: 60, height: 60),
+                            child: Container(margin: const EdgeInsets.all(4), child: buildPiece(value)),
                           );
                         },
                       ),
                     ),
-
-                    /// GRID SIZE CHOIX
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [3, 4, 5, 6].map((size) {
-                          return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  gridSize = size;
-                                  startGame();
-                                });
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueAccent,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 10),
-                              ),
-                              child: Text("${size}x$size"),
-                            ),
-                          );
-                        }).toList(),
-                      ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [3, 4, 5, 6].map((size) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: ElevatedButton(
+                            onPressed: () => setState(() { gridSize = size; startGame(); }),
+                            child: Text("${size}x$size"),
+                          ),
+                        );
+                      }).toList(),
                     ),
                   ],
                 ),
-
-                /// 🎉 CONFETTI
                 Align(
                   alignment: Alignment.topCenter,
-                  child: ConfettiWidget(
-                    confettiController: confetti,
-                    blastDirection: pi / 2,
-                    emissionFrequency: 0.05,
-                    numberOfParticles: 20,
-                    maxBlastForce: 10,
-                    minBlastForce: 5,
-                    gravity: 0.1,
-                  ),
+                  child: ConfettiWidget(confettiController: confetti, blastDirection: pi / 2),
                 ),
               ],
             ),
@@ -389,131 +270,99 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
       ),
     );
   }
-  void showFailDialog() {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (_) => Dialog(
-      backgroundColor: Colors.transparent,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [
-              Color(0xFF1E1E2E),
-              Color(0xFF3A0CA3),
-            ],
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        title: const Text("🎉 Bravo !"),
+        content: Text("Puzzle réussi !\n\n⏱ Temps: $seconds s\n🖱 Clics: $clicks\n⭐ Points: $points\n\nVoulez-vous l'ajouter à votre album ?"),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context); // Fermer Bravo
+
+              if (AlbumData.exists(widget.imagePath)) {
+                _showAlreadyExistsDialog();
+                return;
+              }
+
+              // Génération et ajout
+              final desc = await AiService.generateDescription(title: widget.imageName ?? "Puzzle");
+              AlbumData.addItem(
+                imagePath: widget.imagePath,
+                title: widget.imageName ?? "Puzzle",
+                description: desc,
+              );
+
+              // Retourner à SelectImageScreen en signalant un changement
+              if (mounted) {
+                Navigator.pop(context, true); 
+              }
+            },
+            child: const Text("Oui"),
           ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.redAccent, width: 2),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              "💀 Échec !",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-
-            Text(
-              "Temps: $seconds s\nClics: $clicks\nPoints: $points",
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white70),
-            ),
-
-            const SizedBox(height: 20),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-
-                // 🔁 REPLAY
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    startGame();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.greenAccent,
-                  ),
-                  child: const Text("Rejouer"),
-                ),
-
-                // 🏠 ACCUEIL
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
-                  ),
-                  child: const Text("Accueil"),
-                ),
-
-                // ❌ QUIT
-                ElevatedButton(
-                  onPressed: () {
-                    player.stop();
-                    exit(0);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
-                  ),
-                  child: const Text("Quiter"),
-                ),
-              ],
-            ),
-          ],
-        ),
+          TextButton(
+            onPressed: () => { Navigator.pop(context), Navigator.pop(context) },
+            child: const Text("Non"),
+          ),
+        ],
       ),
-    ),
-  );
-}
+    );
+  }
+
+  void _showAlreadyExistsDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("⚠️"),
+        content: const Text("Déjà existant dans l'album"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Fermer erreur
+              Navigator.pop(context); // Quitter puzzle
+            },
+            child: const Text("OK"),
+          )
+        ],
+      ),
+    );
+  }
+
+  void showFailDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E2E),
+        title: const Text("💀 Échec !", style: TextStyle(color: Colors.white)),
+        content: Text("Temps écoulé ou points épuisés.", style: const TextStyle(color: Colors.white70)),
+        actions: [
+          ElevatedButton(onPressed: () { Navigator.pop(context); startGame(); }, child: const Text("Rejouer")),
+          ElevatedButton(onPressed: () { Navigator.pop(context); Navigator.pop(context); }, child: const Text("Accueil")),
+        ],
+      ),
+    );
+  }
 }
 
-/// 🎨 PAINTER
 class PuzzlePainter extends CustomPainter {
   final ui.Image image;
   final int row, col, gridSize;
-
   PuzzlePainter(this.image, this.row, this.col, this.gridSize);
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint();
-
     double w = image.width / gridSize;
     double h = image.height / gridSize;
-
     Rect src = Rect.fromLTWH(col * w, row * h, w, h);
     Rect dst = Rect.fromLTWH(0, 0, size.width, size.height);
-
     canvas.drawImageRect(image, src, dst, paint);
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
-}
-
-/// 🧩 CLIPPER
-class PuzzleClipper extends CustomClipper<Path> {
-  final int row, col, size;
-
-  PuzzleClipper(this.row, this.col, this.size);
-
-  @override
-  Path getClip(Size s) {
-    Path path = Path();
-    path.addRect(Rect.fromLTWH(0, 0, s.width, s.height));
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

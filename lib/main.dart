@@ -37,6 +37,7 @@ class QuickJoyApp extends StatelessWidget {
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/game_provider.dart';
+import 'data/album_data.dart';
 import 'router/app_router.dart';
 
 void main() {
@@ -44,6 +45,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => GameProvider()),
+        ChangeNotifierProvider.value(value: AlbumData()),
       ],
       child: const QuickJoyApp(),
     ),
