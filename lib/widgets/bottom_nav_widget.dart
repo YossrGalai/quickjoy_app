@@ -4,10 +4,12 @@ import '../router/app_router.dart';
 
 class BottomNavWidget extends StatelessWidget {
   final Color backgroundColor;
+  final bool showHome;
 
   const BottomNavWidget({
     super.key,
     this.backgroundColor = const Color(0xFF1A1A3E),
+    this.showHome = true,
   });
 
 
@@ -15,17 +17,18 @@ class BottomNavWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: backgroundColor.withValues(alpha: 0.85),
         border: Border(
           top: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
         ),
       ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
+      
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            if (showHome) // ← conditionnel
               _NavItem(
                 icon: Icons.home_rounded,
                 label: 'Accueil',
@@ -33,13 +36,12 @@ class BottomNavWidget extends StatelessWidget {
                   AppRouter.home, (_) => false,
                 ),
               ),
-              _NavItem(
-                icon: Icons.history_rounded,
-                label: 'Historique',
-                onTap: () {}, // à brancher plus tard
-              ),
-            ],
-          ),
+            _NavItem(
+              icon: Icons.photo_album_rounded,
+              label: 'Album',
+              onTap: () => Navigator.of(context).pushNamed(AppRouter.album),
+            ),
+          ],
         ),
       ),
     );

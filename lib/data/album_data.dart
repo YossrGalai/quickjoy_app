@@ -19,7 +19,7 @@ class AlbumData extends ChangeNotifier {
   AlbumData._internal();
 
   static List<AlbumItem> items = [];
-  static Set<String> _paths = {};
+  static final Set<String> _paths = {};
 
   /// ✅ Ajout synchronisé si on a déjà description
   static void addItem({

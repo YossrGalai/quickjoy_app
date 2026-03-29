@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/quiz.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -117,7 +118,7 @@ class QuizService {
       return data.map((q) => QuizQuestion.fromJson(q)).toList();
 
     } on FormatException catch (e) {
-      print('Erreur de parsing JSON : $e');
+      debugPrint('Erreur de parsing JSON : $e');
       // Récupération partielle : extraire les objets JSON complets
       final matches = RegExp(r'\{[^{}]*\}').allMatches(responseText);
       final validQuestions = <QuizQuestion>[];

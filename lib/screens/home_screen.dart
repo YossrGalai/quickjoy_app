@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     return Scaffold(
       backgroundColor: AppTheme.background,
-      bottomNavigationBar: const BottomNavWidget(),
+      bottomNavigationBar: const BottomNavWidget(showHome: false),
       body: SafeArea(
         child: FadeTransition(
           opacity: _fadeAnim,
@@ -155,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen>
                   const Spacer(),
 
                   // Sessions du jour
-                  Center(
+                  /*Center(
                     child: Text(
                       '${provider.sessionsToday} sessions aujourd\'hui',
                       style: const TextStyle(
@@ -165,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 24),*/
                 ],
               ),
             ),

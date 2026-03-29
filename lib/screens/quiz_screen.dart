@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/quiz_controller.dart';
 import '../theme/app_theme.dart';
+import '../widgets/bottom_nav_widget.dart';
 import '../widgets/quiz_widgets.dart';
 import 'result_screen.dart';
 
@@ -63,6 +64,7 @@ class _QuizGameScreenState extends State<QuizGameScreen>
         // ── Guard: not yet started ──────────────────────────────
         if (ctrl.state == QuizState.idle || ctrl.currentQuestion == null) {
             return Scaffold(
+              bottomNavigationBar: const BottomNavWidget(),
               appBar: AppBar(
                   backgroundColor: AppTheme.surface,
                   elevation: 0,
@@ -148,6 +150,7 @@ class _QuizGameScreenState extends State<QuizGameScreen>
         }
 
         return Scaffold(
+          bottomNavigationBar: const BottomNavWidget(),
           appBar: AppBar(
             backgroundColor: AppTheme.surface,
             elevation: 0,

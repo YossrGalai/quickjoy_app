@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:confetti/confetti.dart';
-import 'dart:io';
+//import 'dart:io';
 import '../services/ai_service.dart';
 import '../data/album_data.dart';
 import '../providers/game_provider.dart';
@@ -191,7 +191,8 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
                             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: gridSize),
                             itemBuilder: (context, index) {
                               return DragTarget<int>(
-                                onAccept: (data) async {
+                                onAcceptWithDetails: (details) async {
+                                  final data = details.data;
                                   if (isPaused) return;
                                   setState(() {
                                     if (data == index) {
@@ -342,7 +343,7 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E2E),
         title: const Text("💀 Échec !", style: TextStyle(color: Colors.white)),
-        content: Text("Temps écoulé ou points épuisés.", style: const TextStyle(color: Colors.white70)),
+        content: const Text("Temps écoulé ou points épuisés.", style: TextStyle(color: Colors.white70)),
         actions: [
           ElevatedButton(onPressed: () { Navigator.pop(context); startGame(); }, child: const Text("Rejouer")),
           ElevatedButton(onPressed: () { Navigator.pop(context); Navigator.pop(context); }, child: const Text("Accueil")),

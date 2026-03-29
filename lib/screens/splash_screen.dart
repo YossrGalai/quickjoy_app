@@ -13,156 +13,155 @@ class QuizSplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1E2E),
+      extendBody: true,
+      extendBodyBehindAppBar: true,
       appBar: const AppBarWidget(title: 'Choisir le niveau', showBack: true),
-      bottomNavigationBar: const BottomNavWidget(backgroundColor: Color(0xFF1E1E2E)),
+      bottomNavigationBar: const BottomNavWidget(),
       body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Color(0xFF1E1E2E),
-                Color(0xFF3A0CA3),
-                Color(0xFF4361EE),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            colors: [Color(0xFF1E1E2E), Color(0xFF3A0CA3), Color(0xFF4361EE)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          child: Consumer<QuizController>(
-          builder: (context, ctrl, _) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-              child: Column(
-                children: [
-                  const SizedBox(height: 16),
+          ),
+          child: SafeArea(
+            child: Consumer<QuizController>(
+            builder: (context, ctrl, _) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 16),
 
-                  // Flag + glow effect
-                  Container(
-                    width: 90,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppTheme.cardColor,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.quizColor.withValues(alpha: 0.25),
-                          blurRadius: 32,
-                          spreadRadius: 8,
-                        ),
-                      ],
-                    ),
-                    child: const Center(
-                      child: Text('🇹🇳', style: TextStyle(fontSize: 44)),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [AppTheme.accentCyan, AppTheme.accentPurple],
-                    ).createShader(bounds),
-                    child: const Text(
-                      'Quiz Tunisie',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Testez vos connaissances sur la Tunisie\nhistoire · culture · géographie',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppTheme.textSecondary,
-                      fontFamily: 'Poppins',
-                      height: 1.6,
-                    ),
-                  ),
-                  const SizedBox(height: 36),
-
-                  // Info row
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _InfoChip(icon: Icons.quiz_outlined, label: '10 questions'),
-                      SizedBox(width: 12),
-                      _InfoChip(icon: Icons.favorite_outline, label: '3 vies'),
-                      SizedBox(width: 12),
-                      _InfoChip(icon: Icons.auto_awesome_outlined, label: 'Agent AI'),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Level label
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'CHOISIR UN NIVEAU',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppTheme.textSecondary,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'Poppins',
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Level tiles
-                  ...List.generate(kQuizLevels.length, (i) {
-                    return _LevelTile(
-                      level: kQuizLevels[i],
-                      index: i,
-                      selected: ctrl.levelIndex == i,
-                      onTap: () => ctrl.setLevel(i),
-                    );
-                  }),
-                  const SizedBox(height: 32),
-
-                  // Start button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        ctrl.startGame();
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => ChangeNotifierProvider.value(
-                              value: ctrl,
-                              child: const QuizGameScreen(),
-                            ),
+                    // Flag + glow effect
+                    Container(
+                      width: 90,
+                      height: 90,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppTheme.cardColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppTheme.quizColor.withValues(alpha: 0.25),
+                            blurRadius: 32,
+                            spreadRadius: 8,
                           ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0077AA),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 0,
+                        ],
                       ),
+                      child: const Center(
+                        child: Text('🇹🇳', style: TextStyle(fontSize: 44)),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [AppTheme.accentCyan, AppTheme.accentPurple],
+                      ).createShader(bounds),
                       child: const Text(
-                        'Commencer le quiz',
+                        'Quiz Tunisie',
                         style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
                           fontFamily: 'Poppins',
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Testez vos connaissances sur la Tunisie\nhistoire · culture · géographie',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppTheme.textSecondary,
+                        fontFamily: 'Poppins',
+                        height: 1.6,
+                      ),
+                    ),
+                    const SizedBox(height: 36),
+
+                    // Info row
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _InfoChip(icon: Icons.quiz_outlined, label: '10 questions'),
+                        SizedBox(width: 12),
+                        _InfoChip(icon: Icons.favorite_outline, label: '3 vies'),
+                        SizedBox(width: 12),
+                        _InfoChip(icon: Icons.auto_awesome_outlined, label: 'Agent AI'),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Level label
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'CHOISIR UN NIVEAU',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppTheme.textSecondary,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'Poppins',
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Level tiles
+                    ...List.generate(kQuizLevels.length, (i) {
+                      return _LevelTile(
+                        level: kQuizLevels[i],
+                        index: i,
+                        selected: ctrl.levelIndex == i,
+                        onTap: () => ctrl.setLevel(i),
+                      );
+                    }),
+                    const SizedBox(height: 32),
+
+                    // Start button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          ctrl.startGame();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => ChangeNotifierProvider.value(
+                                value: ctrl,
+                                child: const QuizGameScreen(),
+                              ),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0077AA),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Commencer le quiz',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        )
       )
     );
   }

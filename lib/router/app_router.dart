@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../screens/album_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/quiz_screen.dart';
 
@@ -11,6 +12,7 @@ class AppRouter {
   static const String puzzle = '/puzzle';
   static const String levelSelect = '/level-select';
   static const String selectImage = '/select_image';
+  static const String album = '/album';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -22,8 +24,11 @@ class AppRouter {
         return _fadeRoute(const QuizGameScreen(), settings);
       case selectImage:
         return _fadeRoute(const SelectImageScreen(), settings);
+      case album:
+        return _fadeRoute(const AlbumScreen(), settings);
       default:
         return _fadeRoute(const HomeScreen(), settings);
+        
     }
   }
 

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'mozaic_puzzle_screen.dart';
-import 'album_screen.dart';
 import '../services/ai_service.dart';
 import '../data/album_data.dart';
+import '../widgets/bottom_nav_widget.dart';
 
 class SelectImageScreen extends StatefulWidget {
   const SelectImageScreen({super.key});
@@ -80,7 +80,9 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       extendBodyBehindAppBar: true,
+      bottomNavigationBar: const BottomNavWidget(),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -92,34 +94,14 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // 🔙 Retour
-              Align(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.25),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-                      ),
-                      child: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 22),
-                    ),
-                  ),
-                ),
-              ),
-
               // 🏛️ Header
-              Padding(
-                padding: const EdgeInsets.all(10),
+              const Padding(
+                padding: EdgeInsets.all(10),
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text('🇹🇳', style: TextStyle(fontSize: 40)),
                         SizedBox(width: 12),
                         Text('Tunisie', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
@@ -127,23 +109,23 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                         Text('🇹🇳', style: TextStyle(fontSize: 40)),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
+                    SizedBox(height: 8),
+                    Text(
                       'Choisissez une image pour votre puzzle',
                       style: TextStyle(color: Colors.white70),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 16),
-                    const Row(
+                    SizedBox(height: 16),
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('🏺', style: TextStyle(fontSize: 24)),
-                        const SizedBox(width: 8),
-                        const Text('🕌', style: TextStyle(fontSize: 24)),
-                        const SizedBox(width: 8),
-                        const Text('🏛️', style: TextStyle(fontSize: 24)),
-                        const SizedBox(width: 8),
-                        const Text('🇹🇳', style: TextStyle(fontSize: 24)),
+                        Text('🏺', style: TextStyle(fontSize: 24)),
+                        SizedBox(width: 8),
+                        Text('🕌', style: TextStyle(fontSize: 24)),
+                        SizedBox(width: 8),
+                        Text('🏛️', style: TextStyle(fontSize: 24)),
+                        SizedBox(width: 8),
+                        Text('🇹🇳', style: TextStyle(fontSize: 24)),
                       ],
                     ),
                   ],
@@ -263,56 +245,7 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                     },
                   ),
                 ),
-              ),
-
-              // Bottom decoration
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text('🌟', style: TextStyle(fontSize: 24)),
-                        SizedBox(width: 16),
-                        Text('Puzzle Art Tunisien', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w500)),
-                        SizedBox(width: 16),
-                        Text('🌟', style: TextStyle(fontSize: 24)),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        GestureDetector(
-                          onTap: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const AlbumScreen()),
-                            );
-                            SchedulerBinding.instance.addPostFrameCallback((_) {
-                              setState(() {});
-                            });
-                          },
-                          child: const Text("Album", style: TextStyle(color: Colors.white, fontSize: 18)),
-                        ),
-                        const SizedBox(width: 5),
-                        IconButton(
-                          icon: const Icon(Icons.photo_album, color: Colors.white),
-                          onPressed: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const AlbumScreen()),
-                            );
-                            SchedulerBinding.instance.addPostFrameCallback((_) {
-                              setState(() {});
-                            });
-                          },
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
+              ),            
             ],
           ),
         ),
