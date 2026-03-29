@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
+import 'data/album_data.dart';
 import 'providers/game_provider.dart';
 import 'controllers/quiz_controller.dart';
 import 'router/app_router.dart';
