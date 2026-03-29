@@ -62,13 +62,29 @@ class _QuizGameScreenState extends State<QuizGameScreen>
       builder: (context, ctrl, _) {
         // ── Guard: not yet started ──────────────────────────────
         if (ctrl.state == QuizState.idle || ctrl.currentQuestion == null) {
-            return const Scaffold(
-              backgroundColor: AppTheme.background,
-              body: Center(child: CircularProgressIndicator()),
+            return Scaffold(
+              appBar: AppBar(
+                  backgroundColor: AppTheme.surface,
+                  elevation: 0,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                        color: AppTheme.textPrimary, size: 18),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+              body: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF1E1E2E), Color(0xFF3A0CA3), Color(0xFF4361EE)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: const Center(child: CircularProgressIndicator()),
+              ),
             );
           }
-          print("AI TEXT UI = ${ctrl.aiText}");
-
+  
         // Navigate to results when finished
         if (ctrl.state == QuizState.finished && ctrl.result != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -87,47 +103,85 @@ class _QuizGameScreenState extends State<QuizGameScreen>
 
         final q = ctrl.currentQuestion;
         final letters = ['A', 'B', 'C', 'D'];
+        void confirmQuit(BuildContext context, QuizController ctrl, {bool goHome = false}) {
+          showDialog(
+            context: context,
+            builder: (dialogContext) => AlertDialog(
+              backgroundColor: AppTheme.cardColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: const Text(
+                'Quitter la partie ?',
+                style: TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              content: const Text(
+                'Ta progression sera perdue.',
+                style: TextStyle(color: AppTheme.textSecondary, fontFamily: 'Poppins'),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text('Continuer',
+                      style: TextStyle(color: AppTheme.accentCyan)),
+                ),
+                TextButton(
+                  onPressed: () {
+                    ctrl.resetGame();
+                    Navigator.pop(dialogContext);
+                    if (goHome) {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/home', (_) => false,
+                      );
+                    } else {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: const Text('Quitter',
+                      style: TextStyle(color: Color(0xFFFF6B6B))),
+                ),
+              ],
+            ),
+          );
+        }
 
         return Scaffold(
-          backgroundColor: AppTheme.background,
           appBar: AppBar(
             backgroundColor: AppTheme.surface,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () async {
-                final navigator = Navigator.of(context);
-
-                final confirm = await showDialog(
-                  context: context,
-                  builder: (dialogContext) => AlertDialog(
-                    title: const Text("Quitter le quiz ?"),
-                    content: const Text("Votre progression sera perdue."),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(dialogContext, false),
-                        child: const Text("Annuler"),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(dialogContext, true),
-                        child: const Text("Quitter"),
-                      ),
-                    ],
-                  ),
-                );
-
-                if (!mounted) return;
-
-                if (confirm == true) {
-                  navigator.pushNamedAndRemoveUntil(
-                    '/home',
-                    (route) => false,
-                  );
-                }
-              },
+              icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                  color: AppTheme.textPrimary, size: 18),
+              onPressed: () => confirmQuit(context, ctrl),
             ),
+            centerTitle: true,
+            title: Text(
+              ctrl.currentLevel.name,
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.home_rounded,
+                    color: AppTheme.accentCyan, size: 22),
+                onPressed: () => confirmQuit(context, ctrl, goHome: true),
+              ),
+            ],
           ),
-          body: SafeArea(
+          body: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF1E1E2E), Color(0xFF3A0CA3), Color(0xFF4361EE)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
             child: Column(
               children: [
                 // ─── Header ─────────────────────────────────────────────
@@ -352,7 +406,7 @@ class _QuizGameScreenState extends State<QuizGameScreen>
                 ),
               ],
             ),
-          ),
+          )
         );
       },
     );

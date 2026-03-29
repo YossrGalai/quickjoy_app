@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../controllers/quiz_controller.dart';
 import '../models/quiz.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_bar_widget.dart';
+import '../widgets/bottom_nav_widget.dart';
 import 'quiz_screen.dart';
 
 class QuizSplashScreen extends StatelessWidget {
@@ -11,9 +13,22 @@ class QuizSplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
-      body: SafeArea(
-        child: Consumer<QuizController>(
+      backgroundColor: const Color(0xFF1E1E2E),
+      appBar: const AppBarWidget(title: 'Choisir le niveau', showBack: true),
+      bottomNavigationBar: const BottomNavWidget(backgroundColor: Color(0xFF1E1E2E)),
+      body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF1E1E2E),
+                Color(0xFF3A0CA3),
+                Color(0xFF4361EE),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Consumer<QuizController>(
           builder: (context, ctrl, _) {
             return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -125,8 +140,8 @@ class QuizSplashScreen extends StatelessWidget {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.accentCyan,
-                        foregroundColor: AppTheme.background,
+                        backgroundColor: const Color(0xFF0077AA),
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -148,7 +163,7 @@ class QuizSplashScreen extends StatelessWidget {
             );
           },
         ),
-      ),
+      )
     );
   }
 }
@@ -203,16 +218,16 @@ class _LevelTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
-                      color: selected ? AppTheme.accentCyan : AppTheme.textPrimary,
+                      color: selected ? const Color(0xFF0D0D2B) : AppTheme.textPrimary,
                       fontFamily: 'Poppins',
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     '${level.timePerQuestion}s · x${level.scoreMultiplier} score',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: AppTheme.textSecondary,
+                      color: selected ? const Color(0xFF1A3A4A) : AppTheme.textSecondary,
                       fontFamily: 'Poppins',
                     ),
                   ),
@@ -231,7 +246,7 @@ class _LevelTile extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
-                  color: _tagColor,
+                  color: selected ? const Color(0xFF0D0D2B) : _tagColor,
                   fontFamily: 'Poppins',
                 ),
               ),
