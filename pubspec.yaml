@@ -47,6 +47,7 @@ flutter:
   assets:
     - .env
     - assets/images/
+    - assets/sounds/lahn-mansit.mp3
     - assets/sounds/mansit.mp3
     - assets/sounds/lahn-mansit.mp3
     

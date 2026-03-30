@@ -5,11 +5,19 @@ import '../controllers/quiz_controller.dart';
 import '../theme/app_theme.dart';
 import '../widgets/bottom_nav_widget.dart';
 import '../widgets/quiz_widgets.dart';
+import '../providers/game_provider.dart';
 import 'splash_screen.dart';
 import 'quiz_screen.dart';
 
-class QuizResultScreen extends StatelessWidget {
+class QuizResultScreen extends StatefulWidget {
   const QuizResultScreen({super.key});
+
+  @override
+  State<QuizResultScreen> createState() => _QuizResultScreenState();
+}
+
+class _QuizResultScreenState extends State<QuizResultScreen> {
+  bool _scoreAdded = false;
 
   String _emoji(double accuracy) {
     if (accuracy >= 0.9) return '🏆';
@@ -33,10 +41,20 @@ class QuizResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<QuizController>(
-      builder: (context, ctrl, _) {
+    return Consumer2<QuizController, GameProvider>(
+      builder: (context, ctrl, gameProvider, _) {
         final result = ctrl.result;
         if (result == null) return const SizedBox();
+
+        // 🔥 Ajouter le score au total une seule fois
+        if (!_scoreAdded) {
+          _scoreAdded = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) {
+              gameProvider.addScore(result.score);
+            }
+          });
+        }
 
         final pct = (result.accuracy * 100).round();
 

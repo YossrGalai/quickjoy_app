@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
 import 'mozaic_puzzle_screen.dart';
 import '../services/ai_service.dart';
 import '../data/album_data.dart';
@@ -64,21 +65,32 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
   
   final String n8nWebhookUrl = "https://alec-nonaquatic-miesha.ngrok-free.dev/webhook/puzzle-ai"; 
 
+  // 🔥 Flag pour éviter les clics multiples
+  bool _isProcessingFavorite = false; 
+
   void showModernSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        backgroundColor: Colors.blueAccent,
-      ),
-    );
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: const Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          backgroundColor: Colors.blueAccent,
+        ),
+      );
+    } catch (e) {
+      // 🔥 Gestion d'erreur pour les snackbars
+      debugPrint('Erreur lors de l\'affichage du snackbar: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // 🔥 Écouter les changements de AlbumData pour mettre à jour l'UI automatiquement
+    context.watch<AlbumData>();
+    
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
@@ -146,14 +158,22 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                     itemCount: images.length,
                     itemBuilder: (context, index) {
                       final image = images[index];
+                      final imagePath = image['path'];
+                      final imageTitle = image['title'];
+                      
+                      // 🔥 Éviter les exceptions si les données sont nulles
+                      if (imagePath == null || imageTitle == null) {
+                        return const SizedBox(); // Retourner un widget vide en cas de données invalides
+                      }
+                      
                       return GestureDetector(
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) => MosaicPuzzleScreen(
-                                imagePath: image['path']!,
-                                imageName: image['title'],
+                                imagePath: imagePath,
+                                imageName: imageTitle,
                               ),
                             ),
                           ).then((result) {
@@ -168,7 +188,17 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(16),
-                              child: Image.asset(image['path']!, fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+                              child: Image.asset(imagePath, fit: BoxFit.cover, width: double.infinity, height: double.infinity,
+                                errorBuilder: (context, error, stackTrace) {
+                                  // 🔥 Gestion d'erreur pour les images manquantes
+                                  return Container(
+                                    color: Colors.grey[800],
+                                    child: const Center(
+                                      child: Icon(Icons.image_not_supported, color: Colors.white54, size: 40),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                             // Overlay dégradé
                             Container(
@@ -189,8 +219,8 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(image['title']!, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                                  Text(image['subtitle']!, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                                  Text(imageTitle, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                  Text(image['subtitle'] ?? '', style: const TextStyle(color: Colors.white70, fontSize: 12)),
                                 ],
                               ),
                             ),
@@ -200,40 +230,51 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
                                   right: 10,
                                   child: GestureDetector(
                                     onTap: () {
-                                      // Add logic without setState first
-                                      final path = image['path']!;
-                                      if (AlbumData.exists(path)) {
-                                        AlbumData.removeByPath(path);
-                                        showModernSnackbar("Supprimé de l'album ⭐");
-                                      } else {
-                                        showModernSnackbar("Ajouté à l'album ⭐");
-                                        
-                                        AlbumData.addItem(
-                                          imagePath: path,
-                                          title: image['title']!,
-                                          description: "Génération de la description...",
-                                        );
-                                        
-                                        // Lancer la génération AI en arrière-plan
-                                        Future(() async {
-                                          try {
-                                            final desc = await AiService.generateDescription(
-                                              title: image['title']!,
-                                            );
-                                            AlbumData.updateDescriptionByPath(path, desc);
-                                          } catch (_) {
-                                            AlbumData.updateDescriptionByPath(path, "Description indisponible");
+                                      // 🔥 Éviter les clics multiples qui peuvent bloquer l'app
+                                      if (_isProcessingFavorite) return;
+                                      _isProcessingFavorite = true;
+
+                                      try {
+                                        if (AlbumData.exists(imagePath)) {
+                                          AlbumData.removeByPath(imagePath);
+                                          showModernSnackbar("Supprimé de l'album ⭐");
+                                        } else {
+                                          showModernSnackbar("Ajouté à l'album ⭐");
+                                          
+                                          AlbumData.addItem(
+                                            imagePath: imagePath,
+                                            title: imageTitle,
+                                            description: "Génération de la description...",
+                                          );
+                                          
+                                          // Lancer la génération AI en arrière-plan
+                                          Future(() async {
+                                            try {
+                                              final desc = await AiService.generateDescription(
+                                                title: imageTitle,
+                                              );
+                                              AlbumData.updateDescriptionByPath(imagePath, desc);
+                                            } catch (e) {
+                                              // 🔥 Gestion d'erreur pour l'AI
+                                              AlbumData.updateDescriptionByPath(imagePath, "Description indisponible");
+                                            }
+                                          });
+                                        }
+                                      } catch (e) {
+                                        // 🔥 Gestion d'erreur pour éviter le blocage
+                                        showModernSnackbar("Erreur lors de l'opération");
+                                      } finally {
+                                        // 🔥 Réactiver les clics après un court délai
+                                        Future.delayed(const Duration(milliseconds: 300), () {
+                                          if (mounted) {
+                                            _isProcessingFavorite = false;
                                           }
                                         });
                                       }
-                                      // Update UI after
-                                      SchedulerBinding.instance.addPostFrameCallback((_) {
-                                        setState(() {});
-                                      });
                                     },
                                     child: Icon(
                                       // Calcul direct pour une réactivité immédiate
-                                      AlbumData.exists(image['path']!) ? Icons.star : Icons.star_border,
+                                      AlbumData.exists(imagePath) ? Icons.star : Icons.star_border,
                                       color: Colors.yellow,
                                       size: 28,
                                     ),
@@ -253,14 +294,3 @@ class _SelectImageScreenState extends State<SelectImageScreen> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-

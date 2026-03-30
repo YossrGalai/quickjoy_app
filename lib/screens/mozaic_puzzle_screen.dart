@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:confetti/confetti.dart';
-//import 'dart:io';
+import 'dart:io';
 import '../services/ai_service.dart';
 import '../data/album_data.dart';
 import '../providers/game_provider.dart';
@@ -191,8 +191,7 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
                             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: gridSize),
                             itemBuilder: (context, index) {
                               return DragTarget<int>(
-                                onAcceptWithDetails: (details) async {
-                                  final data = details.data;
+                                onAccept: (data) async {
                                   if (isPaused) return;
                                   setState(() {
                                     if (data == index) {
@@ -225,11 +224,7 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
                     Container(
                       height: 150,
                       padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.1),
-                        borderRadius:
-                            BorderRadius.circular(16),
-                      ),
+                      decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(16)),
                       child: GridView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: pieces.length,
@@ -343,7 +338,7 @@ class _MosaicPuzzleScreenState extends State<MosaicPuzzleScreen> {
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E2E),
         title: const Text("💀 Échec !", style: TextStyle(color: Colors.white)),
-        content: const Text("Temps écoulé ou points épuisés.", style: TextStyle(color: Colors.white70)),
+        content: Text("Temps écoulé ou points épuisés.", style: const TextStyle(color: Colors.white70)),
         actions: [
           ElevatedButton(onPressed: () { Navigator.pop(context); startGame(); }, child: const Text("Rejouer")),
           ElevatedButton(onPressed: () { Navigator.pop(context); Navigator.pop(context); }, child: const Text("Accueil")),

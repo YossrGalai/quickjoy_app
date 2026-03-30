@@ -161,9 +161,36 @@ class QuizService {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(utf8.decode(response.bodyBytes));
-      String text = data['choices'][0]['message']['content'];
-      return text.replaceAll("```json", "").replaceAll("```", "").trim();
+      try {
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        if (data is! Map<String, dynamic>) {
+          throw Exception('Invalid JSON response format');
+        }
+
+        final choices = data['choices'];
+        if (choices is! List || choices.isEmpty) {
+          throw Exception('No choices in response');
+        }
+
+        final firstChoice = choices[0];
+        if (firstChoice is! Map<String, dynamic>) {
+          throw Exception('Invalid choice format');
+        }
+
+        final message = firstChoice['message'];
+        if (message is! Map<String, dynamic>) {
+          throw Exception('Invalid message format');
+        }
+
+        final content = message['content'];
+        if (content is! String) {
+          throw Exception('Invalid content format');
+        }
+
+        return content.replaceAll("```json", "").replaceAll("```", "").trim();
+      } catch (e) {
+        throw Exception('Failed to parse API response: $e');
+      }
     } else if (response.statusCode == 429) {
       throw Exception('429');
     } else {

@@ -171,12 +171,13 @@ class QuizController extends ChangeNotifier {
 
   // ─── Answer ───────────────────────────────────────────────────────────────
   void selectAnswer(int optionIndex) {
-    if (_state != QuizState.playing) return;
+    if (_state != QuizState.playing || currentQuestion == null) return;
+
     _stopTimer();
     _selectedIndex = optionIndex;
     _state = QuizState.answered;
 
-    final isCorrect = optionIndex == currentQuestion?.correctIndex;
+    final isCorrect = optionIndex == currentQuestion!.correctIndex;
 
     if (isCorrect) {
       _correctCount++;
@@ -202,6 +203,10 @@ class QuizController extends ChangeNotifier {
 
     if (_lives <= 0) {
       Future.delayed(const Duration(seconds: 2), endGame);
+    } else if (_qIndex >= _questions.length - 1) {
+      Future.delayed(const Duration(seconds: 2), endGame);
+    } else {
+      Future.delayed(const Duration(seconds: 2), _loadQuestion);
     }
   }
 
@@ -236,7 +241,7 @@ class QuizController extends ChangeNotifier {
       xpEarned: _totalXpEarned,
       playerLevel: _playerLevel,
       levelName: currentLevel.name,
-      accuracy: _correctCount / _questions.length,
+      accuracy: _questions.isNotEmpty ? _correctCount / _questions.length : 0.0,
     );
     _generateFinalAI();
     notifyListeners();
@@ -254,9 +259,9 @@ class QuizController extends ChangeNotifier {
 
   // ─── Lifelines ────────────────────────────────────────────────────────────
   void useLifeline50() {
-    if (!_ll50 || _state != QuizState.playing) return;
+    if (!_ll50 || _state != QuizState.playing || currentQuestion == null) return;
     _ll50 = false;
-    final correct = currentQuestion?.correctIndex;
+    final correct = currentQuestion!.correctIndex;
     final wrong = List.generate(currentQuestion!.options.length, (i) => i)
         .where((i) => i != correct)
         .toList()
@@ -276,7 +281,7 @@ class QuizController extends ChangeNotifier {
   }
 
   void useLifelineHint() async {
-    if (!_llHint || _state != QuizState.playing) return;
+    if (!_llHint || _state != QuizState.playing || currentQuestion == null) return;
     _llHint = false;
 
     _aiText = '💡 Indice en cours...';
@@ -306,6 +311,8 @@ class QuizController extends ChangeNotifier {
 
   // ─── AI ───────────────────────────────────────────────────────────────────
   void _showAI(String fallback, bool isCorrect) async {
+    if (currentQuestion == null) return;
+
     _aiVisible = true;
     _aiLoading = true;
     _aiText = '';
@@ -326,6 +333,8 @@ class QuizController extends ChangeNotifier {
   }
 
   void _generateFinalAI() async {
+    if (_result == null) return;
+
     _aiLoading = true;
     _aiText = '';
     _aiVisible = true;
