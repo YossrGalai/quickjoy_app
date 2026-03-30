@@ -6,6 +6,7 @@ import '../theme/app_theme.dart';
 import '../widgets/app_bar_widget.dart';
 import '../widgets/bottom_nav_widget.dart';
 import 'quiz_screen.dart';
+import 'home_screen.dart';
 
 class QuizSplashScreen extends StatelessWidget {
   const QuizSplashScreen({super.key});
@@ -15,7 +16,15 @@ class QuizSplashScreen extends StatelessWidget {
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
-      appBar: const AppBarWidget(title: 'Choisir le niveau', showBack: true),
+      appBar: AppBarWidget(
+  title: 'Choisir le niveau',
+  showBack: true,
+  onBack: () {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
+    );
+  },
+),
       bottomNavigationBar: const BottomNavWidget(),
       body: Container(
           decoration: const BoxDecoration(

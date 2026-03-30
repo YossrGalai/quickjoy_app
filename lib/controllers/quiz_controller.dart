@@ -165,7 +165,7 @@ class QuizController extends ChangeNotifier {
     _showAI(currentQuestion!.explanation, false);
     notifyListeners();
     if (_lives <= 0) {
-      Future.delayed(const Duration(seconds: 2), endGame);
+      Future.delayed(const Duration(seconds: 60), endGame);
     }
   }
 
@@ -202,11 +202,11 @@ class QuizController extends ChangeNotifier {
     notifyListeners();
 
     if (_lives <= 0) {
-      Future.delayed(const Duration(seconds: 2), endGame);
+      Future.delayed(const Duration(seconds: 60), endGame);
     } else if (_qIndex >= _questions.length - 1) {
-      Future.delayed(const Duration(seconds: 2), endGame);
+      Future.delayed(const Duration(seconds: 60), endGame);
     } else {
-      Future.delayed(const Duration(seconds: 2), _loadQuestion);
+      Future.delayed(const Duration(seconds: 60), _loadQuestion);
     }
   }
 

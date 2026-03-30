@@ -6,8 +6,8 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool showBack;
   final bool showHome;
-  final VoidCallback? onBack;
-  final VoidCallback? onHome;
+  final VoidCallback? onBack; // callback pour la flèche back
+  final VoidCallback? onHome; // callback pour l'icône home
 
   const AppBarWidget({
     super.key,
@@ -30,9 +30,16 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       leading: showBack
           ? IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                  color: AppTheme.textPrimary, size: 18),
-              onPressed: onBack ?? () => Navigator.of(context).pop(),
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: AppTheme.textPrimary,
+                size: 18,
+              ),
+              onPressed: onBack ??
+                  () {
+                    // Par défaut, revient à la page précédente
+                    Navigator.of(context).pop();
+                  },
             )
           : null,
       title: Text(
@@ -47,8 +54,11 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         if (showHome)
           IconButton(
-            icon: const Icon(Icons.home_rounded,
-                color: AppTheme.accentCyan, size: 22),
+            icon: const Icon(
+              Icons.home_rounded,
+              color: AppTheme.accentCyan,
+              size: 22,
+            ),
             onPressed: onHome ??
                 () => Navigator.of(context).pushNamedAndRemoveUntil(
                       AppRouter.home,
